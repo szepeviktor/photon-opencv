@@ -158,6 +158,15 @@ bool Giflib_Decoder::get_next_frame(Frame &dst) {
       SavedImage *si = _gif->SavedImages + _gif->ImageCount - 1;
       const auto &desc = si->ImageDesc;
 
+      // Browsers are happy to deal with 0x0 gifs, do as Chrome and use the
+      // first valid size we find
+      if (!_gif->SWidth) {
+        _gif->SWidth = desc.Width;
+      }
+      if (!_gif->SHeight) {
+        _gif->SHeight = desc.Height;
+      }
+
       dst.img = cv::Mat(desc.Height,
           desc.Width,
           CV_8UC4,
