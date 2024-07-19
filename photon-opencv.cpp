@@ -453,6 +453,7 @@ protected:
       case Exiv2::ImageType::png:
         _format = "png";
         _header_channels = _getchannelsfromrawpng();
+        _image_options["png:lossless"] = "true";
         break;
 
       case Exiv2::ImageType::jpeg:
@@ -471,6 +472,7 @@ protected:
       case Exiv2::ImageType::gif:
         _format = "gif";
         _header_channels = _getchannelsfromrawgif();
+        _image_options["gif:lossless"] = "true";
         break;
 
       case Exiv2::ImageType::bmff:
@@ -1194,6 +1196,16 @@ public:
 
     std::string value = params[2].stringValue();
     std::string real_key = format + ":" + key;
+
+    if ("lossless" == key) {
+      auto option = _image_options.find(real_key);
+      // Lossless defaults to false
+      if ((option == _image_options.end() && "true" == value)
+          || (option != _image_options.end()
+            && value != option->second)) {
+        _force_reencode = true;
+      }
+    }
 
     _image_options[real_key] = value;
   }
