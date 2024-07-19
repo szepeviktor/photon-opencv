@@ -423,7 +423,6 @@ protected:
 
     Exiv2::Image::UniquePtr exiv_img;
     bool exiv2_ok = true;
-    Exiv2::enableBMFF();
     try {
       exiv_img = Exiv2::ImageFactory::open(
         (Exiv2::byte *) _raw_image_data.data(), _raw_image_data.size());
