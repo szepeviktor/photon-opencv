@@ -8,7 +8,8 @@ LDLIBS=-lphpcpp -lgif `pkg-config --libs $(PKGC_LIBS)`
 LDFLAGS=-shared
 
 ENCODER_OBJECTS=libwebp-full-frame-encoder.o libwebp-encoder.o \
-	msfgif-encoder.o opencv-encoder.o libheif-encoder.o giflib-encoder.o
+	msfgif-encoder.o opencv-encoder.o libheif-encoder.o giflib-encoder.o \
+	partial-to-full-proxy-encoder.o
 DECODER_OBJECTS=libheif-decoder.o libwebp-decoder.o opencv-decoder.o \
 	giflib-decoder.o
 OBJECTS=$(ENCODER_OBJECTS) $(DECODER_OBJECTS) tempfile.o photon-opencv.o \

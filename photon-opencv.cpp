@@ -30,6 +30,7 @@
 #include "libwebp-full-frame-encoder.h"
 #include "libheif-decoder.h"
 #include "libheif-encoder.h"
+#include "partial-to-full-proxy-encoder.h"
 
 #define _checkimageloaded() { \
   if (_raw_image_data.empty()) { \
@@ -784,19 +785,14 @@ protected:
             &output_buffer));
     }
     else if ("webp" == _format && _decoder->provides_animation()) {
+      encoder.reset(new LibWebP_Full_Frame_Encoder(
+            _format,
+            quality,
+            &_image_options,
+            &output_buffer));
       if (_decoder->provides_optimized_frames()) {
-        encoder.reset(new LibWebP_Encoder(
-              _format,
-              quality,
-              &_image_options,
-              &output_buffer));
-      }
-      else {
-        encoder.reset(new LibWebP_Full_Frame_Encoder(
-              _format,
-              quality,
-              &_image_options,
-              &output_buffer));
+        std::shared_ptr<Encoder> internal_encoder(encoder.release());
+        encoder.reset(new Partial_To_Full_Proxy_Encoder(internal_encoder));
       }
     }
     else if ("gif" == _format && _decoder->provides_animation()) {
