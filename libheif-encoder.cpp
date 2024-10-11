@@ -182,16 +182,19 @@ bool Libheif_Encoder::add_frame(const Frame &frame) {
       buffer->resize(size);
       std::memcpy(buffer->data(), data, size);
 
-      heif_error error;
-      error.code = heif_error_Ok;
-      return error;
+      heif_error error_ok;
+      error_ok.code = heif_error_Ok;
+      error_ok.subcode = heif_suberror_Unspecified;
+      error_ok.message = "Success";
+      return error_ok;
     };
 
   error = heif_context_write(context.get(),
       &simple_ram_copier,
       _output);
   if (error.code != heif_error_Ok) {
-    _last_error = "Failed to write to RAM";
+    _last_error = "Failed to encode heif image and write to RAM: ";
+    _last_error += error.message;
     return false;
   }
 
