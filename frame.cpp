@@ -21,8 +21,7 @@ Frame::Frame(const Frame &src) :
   blending(src.blending),
   gif_frame_palette(src.gif_frame_palette),
   gif_global_palette(src.gif_global_palette),
-  gif_transparent_index(src.gif_transparent_index),
-  may_dispose_to_previous(src.may_dispose_to_previous) {
+  gif_transparent_index(src.gif_transparent_index) {
 }
 
 void Frame::reset() {
@@ -32,7 +31,6 @@ void Frame::reset() {
   disposal = DISPOSAL_UNDEFINED;
   blending = BLENDING_UNDEFINED;
   gif_transparent_index = -1;
-  may_dispose_to_previous = false;
   gif_frame_palette.reset();
   gif_global_palette.reset();
   x = 0;

@@ -27,8 +27,6 @@ struct Frame {
   std::shared_ptr<Gif_Palette> gif_global_palette;
   int gif_transparent_index;
 
-  bool may_dispose_to_previous;
-
   Frame();
   Frame(const Frame &src);
   void reset();

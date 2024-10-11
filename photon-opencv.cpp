@@ -26,7 +26,6 @@
 #include "giflib-encoder.h"
 #include "msfgif-encoder.h"
 #include "libwebp-decoder.h"
-#include "libwebp-encoder.h"
 #include "libwebp-full-frame-encoder.h"
 #include "libheif-decoder.h"
 #include "libheif-encoder.h"

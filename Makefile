@@ -7,7 +7,7 @@ CXXFLAGS=-Wall -Wextra -O3 -std=c++17 -fpic -isystem vendor \
 LDLIBS=-lphpcpp -lgif `pkg-config --libs $(PKGC_LIBS)`
 LDFLAGS=-shared
 
-ENCODER_OBJECTS=libwebp-full-frame-encoder.o libwebp-encoder.o \
+ENCODER_OBJECTS=libwebp-full-frame-encoder.o \
 	msfgif-encoder.o opencv-encoder.o libheif-encoder.o giflib-encoder.o \
 	partial-to-full-proxy-encoder.o
 DECODER_OBJECTS=libheif-decoder.o libwebp-decoder.o opencv-decoder.o \

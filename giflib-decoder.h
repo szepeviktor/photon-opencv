@@ -6,9 +6,6 @@ protected:
   std::shared_ptr<Gif_Palette> _global_palette;
   int _loops;
   bool _can_read_loops;
-  bool _may_dispose_to_previous;
-
-  bool _has_previous_disposal();
 
 public:
   Giflib_Decoder(const std::string *data);
