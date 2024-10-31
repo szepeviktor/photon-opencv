@@ -55,6 +55,7 @@ protected:
   std::vector<std::function<void()>> _operations;
   std::unique_ptr<Decoder> _decoder;
   bool _preserve_palette;
+  bool _first_encode;
 
   const int WEBP_DEFAULT_QUALITY = 75;
   const int AVIF_DEFAULT_QUALITY = 75;
@@ -420,6 +421,7 @@ protected:
     _compression_quality = -1;
     _force_reencode = false;
     _preserve_palette = false;
+    _first_encode = true;
 
     Exiv2::Image::UniquePtr exiv_img;
     bool exiv2_ok = true;
@@ -764,6 +766,13 @@ protected:
         quality = AVIF_DEFAULT_QUALITY;
       }
     }
+
+    if (!_first_encode && _decoder.get()) {
+      // Rewind and load the first frame if it's not the first call
+      _decoder->reset();
+      _loadnextframe();
+    }
+    _first_encode = false;
 
     if ((!_decoder.get() && !_setupdecoder())
         || (_frame.empty && !_loadnextframe())) {
