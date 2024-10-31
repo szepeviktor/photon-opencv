@@ -4,7 +4,7 @@ protected:
   Frame _full_frame;
   Frame _previous;
 
-  void initialize_full_frame(const Frame &frame);
+  void _initialize_full_frame(const Frame &frame);
 
 public:
   Partial_To_Full_Proxy_Encoder(std::shared_ptr<Encoder> internal_encoder);

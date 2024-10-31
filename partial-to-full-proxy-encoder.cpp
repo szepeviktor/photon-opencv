@@ -12,7 +12,7 @@ Partial_To_Full_Proxy_Encoder::Partial_To_Full_Proxy_Encoder(
     std::shared_ptr<Encoder> internal_encoder) :
   _internal_encoder(internal_encoder) {
 }
-void Partial_To_Full_Proxy_Encoder::initialize_full_frame(
+void Partial_To_Full_Proxy_Encoder::_initialize_full_frame(
     const Frame &frame) {
   _full_frame.img = cv::Mat(frame.canvas_height,
       frame.canvas_width,
@@ -23,16 +23,29 @@ void Partial_To_Full_Proxy_Encoder::initialize_full_frame(
   _full_frame.canvas_width = frame.canvas_width;
   _full_frame.canvas_height = frame.canvas_height;
   _full_frame.empty = false;
+  _full_frame.delay = 0;
 }
 
 bool Partial_To_Full_Proxy_Encoder::add_frame(const Frame &frame) {
-  if (4 != frame.img.channels()) {
-    _last_error = "Unsupported number of channels";
+  if (!_full_frame.empty && !_internal_encoder->add_frame(_full_frame)) {
+    _last_error = "Failed to insert previous frame: ";
+    _last_error += _internal_encoder->get_last_error();
     return false;
   }
 
   if (_full_frame.empty) {
-    initialize_full_frame(frame);
+    _initialize_full_frame(frame);
+  }
+
+  // Valid empty frames might come from crops or agressive resizing
+  if (frame.empty || frame.img.empty()) {
+    _full_frame.delay += frame.delay;
+    return true;
+  }
+
+  if (4 != frame.img.channels()) {
+    _last_error = "Unsupported number of channels";
+    return false;
   }
 
   cv::Rect previous_roi(
@@ -101,11 +114,28 @@ bool Partial_To_Full_Proxy_Encoder::add_frame(const Frame &frame) {
   }
 
   _full_frame.delay = frame.delay;
-  return _internal_encoder->add_frame(_full_frame);
+  return true;
 }
 
 bool Partial_To_Full_Proxy_Encoder::finalize() {
-  return _internal_encoder->finalize();
+  if (_full_frame.empty) {
+    _last_error = "Can't finalize image with no frames";
+    return false;
+  }
+
+  if (!_internal_encoder->add_frame(_full_frame)) {
+    _last_error = "Failed to insert last frame: ";
+    _last_error += _internal_encoder->get_last_error();
+    return false;
+  }
+
+  if (!_internal_encoder->finalize()) {
+    _last_error = "Failed to finalize: ";
+    _last_error += _internal_encoder->get_last_error();
+    return false;
+  }
+
+  return true;
 }
 
 bool Partial_To_Full_Proxy_Encoder::supports_optimized_frames() {
